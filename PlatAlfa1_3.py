@@ -1,7 +1,6 @@
 import pygame, os
 from pygame.constants import K_ESCAPE
 
-print(123)
 WIDTH = 1000
 HEIGHT = 600
 FPS = 30
@@ -76,7 +75,7 @@ class Player(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         check()
         fal()
-
+        uphead()
         if keys[pygame.K_r] and not show_menu:
             ground.rect.x = -10
             platform1.rect.x = 500
@@ -89,6 +88,21 @@ class Player(pygame.sprite.Sprite):
             self.image = player_img
             g = 1
         ddd()
+        if keys[pygame.K_d] and not show_menu:
+            if Flip == 1:
+                player_img = pygame.transform.flip(player_img, 1, 0)
+                Flip = 0
+            player.image = player_img
+            if player.rect.x <= 800:
+                if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
+                    player.rect.x += 9
+                elif keys[pygame.K_d] and not platd:
+                    player.rect.x += 5
+            else:
+                if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
+                    x += 9
+                elif keys[pygame.K_d] and not platd:
+                    x += 5
         if keys[pygame.K_a] and not show_menu:
             if Flip == 0:
                 player_img = pygame.transform.flip(player_img, 1, 0)
@@ -100,10 +114,6 @@ class Player(pygame.sprite.Sprite):
                         self.rect.x -= 9
                     else:
                         self.rect.x -= 5
-        if (platform1.rect.x) <= (self.rect.x + 70):
-            if (platform1.rect.x + 124) >= (self.rect.x + 10):
-                if (platform1.rect.y + 30) >= (self.rect.y) and (platform1.rect.y) <= (self.rect.y):
-                    god = False
         if (keys[pygame.K_SPACE] or keys[pygame.K_w] or god) and not show_menu:
             if not god:
                 god = True
@@ -269,32 +279,23 @@ class Particle(pygame.sprite.Sprite):
         
 
 def ddd():
-    global keys, Flip, player_img, x, i, platd
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_d] and not show_menu:
-        if Flip == 1:
-            player_img = pygame.transform.flip(player_img, 1, 0)
-            Flip = 0
-        player.image = player_img
-        for i in platforms:
-            if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 150:
-                if player.rect.y <= i.rect.y + 30 and player.rect.y + 115 >= i.rect.y:
-                    platd = True
-                    break
-            else:
-                platd = False
+    global keys, Flip, player_img, x, platd
+    for i in platforms:
+        if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 150:
+            if player.rect.y <= i.rect.y + 30 and player.rect.y + 115 >= i.rect.y:
+                platd = True
                 break
-        if player.rect.x <= 800:
-            if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
-                player.rect.x += 9
-            elif keys[pygame.K_d] and not platd:
-                player.rect.x += 5
         else:
-            if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
-                x += 9
-            elif keys[pygame.K_d] and not platd:
-                x += 5
-        #print(platd)
+            platd = False
+            break
+
+def uphead():
+    global god
+    for i in platforms:
+        if (i.rect.x) <= (player.rect.x + 70):
+            if (i.rect.x + 124) >= (player.rect.x + 10):
+                if (i.rect.y + 30) >= (player.rect.y) and (i.rect.y) <= (player.rect.y):
+                    god = False
 
 def check():
     global platforms, player, on_plat
@@ -322,7 +323,7 @@ all_sprites = pygame.sprite.Group()
 bg = BackGround(x + 1240, y + 300)
 ground = Ground(x + 1240, y + 563)
 platform1 = Platform(x + 500, y + 370)
-platform2 = Platform(x + 900, y + 300)
+platform2 = Platform(x + 800, y + 300)
 platform3 = Platform(x + 500, y + 370)
 platform4 = Platform(x + 500, y + 370)
 particle = Particle(x, y)
