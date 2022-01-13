@@ -1,7 +1,7 @@
 import pygame, os
 from pygame.constants import K_ESCAPE
 
-print(1)
+print(12)
 WIDTH = 1000
 HEIGHT = 600
 FPS = 30
