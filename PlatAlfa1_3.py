@@ -76,6 +76,7 @@ class Player(pygame.sprite.Sprite):
         check()
         fal()
         uphead()
+        ddd()
         if keys[pygame.K_r] and not show_menu:
             ground.rect.x = -10
             platform1.rect.x = 500
@@ -87,7 +88,6 @@ class Player(pygame.sprite.Sprite):
                 Flip = 0
             self.image = player_img
             g = 1
-        ddd()
         if keys[pygame.K_d] and not show_menu:
             if Flip == 1:
                 player_img = pygame.transform.flip(player_img, 1, 0)
@@ -277,18 +277,6 @@ class Particle(pygame.sprite.Sprite):
         else:
             cod = 10
         
-
-def ddd():
-    global keys, Flip, player_img, x, platd
-    for i in platforms:
-        if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 150:
-            if player.rect.y <= i.rect.y + 30 and player.rect.y + 115 >= i.rect.y:
-                platd = True
-                break
-        else:
-            platd = False
-            break
-
 def uphead():
     global god
     for i in platforms:
@@ -317,8 +305,6 @@ def fal():
         else:
             g = 1
 
-
-
 all_sprites = pygame.sprite.Group()
 bg = BackGround(x + 1240, y + 300)
 ground = Ground(x + 1240, y + 563)
@@ -340,6 +326,32 @@ all_sprites.add(player)
 platforms = []
 platforms.append(platform1)
 platforms.append(platform2)
+
+def ddd():
+    global platd
+    for i in platforms:
+        if player.rect.x + 80 >= i.rect.x:
+            print(1)
+            if player.rect.x + 20 <= i.rect.x + 150:
+                print(2)
+                if player.rect.y <= i.rect.y + 30:
+                    print(3)
+                    if player.rect.y + 115 >= i.rect.y:
+                        platd = True
+                        print(5)
+                        break
+                    else:
+                        platd = False
+                        break
+                else:
+                    platd = False
+                    break
+            else:
+                platd = False
+                break
+        else:
+            platd = False
+            break
 
 g = 1
 d = 20
