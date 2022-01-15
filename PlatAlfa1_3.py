@@ -277,6 +277,32 @@ class Particle(pygame.sprite.Sprite):
         else:
             cod = 10
         
+def ddd():
+    global platd
+    for i in platforms:
+        if player.rect.x + 80 >= i.rect.x:
+            print(1)
+            if player.rect.x + 20 <= i.rect.x + 150:
+                print(2)
+                if player.rect.y <= i.rect.y + 30:
+                    print(3)
+                    if player.rect.y + 115 >= i.rect.y:
+                        platd = True
+                        print(5)
+                        break
+                    else:
+                        platd = False
+                        break
+                else:
+                    platd = False
+                    break
+            else:
+                platd = False
+                break
+        else:
+            platd = False
+            break
+
 def uphead():
     global god
     for i in platforms:
@@ -326,32 +352,6 @@ all_sprites.add(player)
 platforms = []
 platforms.append(platform1)
 platforms.append(platform2)
-
-def ddd():
-    global platd
-    for i in platforms:
-        if player.rect.x + 80 >= i.rect.x:
-            print(1)
-            if player.rect.x + 20 <= i.rect.x + 150:
-                print(2)
-                if player.rect.y <= i.rect.y + 30:
-                    print(3)
-                    if player.rect.y + 115 >= i.rect.y:
-                        platd = True
-                        print(5)
-                        break
-                    else:
-                        platd = False
-                        break
-                else:
-                    platd = False
-                    break
-            else:
-                platd = False
-                break
-        else:
-            platd = False
-            break
 
 g = 1
 d = 20
