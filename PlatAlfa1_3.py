@@ -37,7 +37,8 @@ an = 124
 e = -0.1
 c = 0
 co = 0
-platd = False
+platd = 0
+plata = 0
 BR_for = False
 cod = 10
 
@@ -77,6 +78,7 @@ class Player(pygame.sprite.Sprite):
         fal()
         uphead()
         ddd()
+        aaa()
         if keys[pygame.K_r] and not show_menu:
             ground.rect.x = -10
             platform1.rect.x = 500
@@ -94,26 +96,20 @@ class Player(pygame.sprite.Sprite):
                 Flip = 0
             player.image = player_img
             if player.rect.x <= 800:
-                if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
+                if keys[pygame.K_d] and keys[pygame.K_LCTRL] and platd == 0:
                     player.rect.x += 9
-                elif keys[pygame.K_d] and not platd:
+                elif keys[pygame.K_d] and platd == 0:
                     player.rect.x += 5
-            else:
-                if keys[pygame.K_d] and keys[pygame.K_LCTRL] and not platd:
-                    x += 9
-                elif keys[pygame.K_d] and not platd:
-                    x += 5
         if keys[pygame.K_a] and not show_menu:
             if Flip == 0:
                 player_img = pygame.transform.flip(player_img, 1, 0)
                 Flip = 1
             self.image = player_img
-            if self.rect.x + 20 >= platform1.rect.x + 150 or self.rect.x + 80 <= platform1.rect.x or self.rect.y >= platform1.rect.y + 20 or self.rect.y + 114 <= platform1.rect.y:
-                if self.rect.x >= 100:
-                    if keys[pygame.K_LCTRL]:
-                        self.rect.x -= 9
-                    else:
-                        self.rect.x -= 5
+            if self.rect.x >= 100:
+                if keys[pygame.K_LCTRL] and not show_menu and plata == 0:
+                    self.rect.x -= 9
+                elif keys[pygame.K_a] and platd == 0:
+                    self.rect.x -= 5
         if (keys[pygame.K_SPACE] or keys[pygame.K_w] or god) and not show_menu:
             if not god:
                 god = True
@@ -279,29 +275,23 @@ class Particle(pygame.sprite.Sprite):
         
 def ddd():
     global platd
+    platd = 0
     for i in platforms:
         if player.rect.x + 80 >= i.rect.x:
-            print(1)
             if player.rect.x + 20 <= i.rect.x + 150:
-                print(2)
                 if player.rect.y <= i.rect.y + 30:
-                    print(3)
                     if player.rect.y + 115 >= i.rect.y:
-                        platd = True
-                        print(5)
-                        break
-                    else:
-                        platd = False
-                        break
-                else:
-                    platd = False
-                    break
-            else:
-                platd = False
-                break
-        else:
-            platd = False
-            break
+                        platd += 1
+
+def aaa():
+    global plata
+    plata = 0
+    for i in platforms:
+        if player.rect.x + 80 >= i.rect.x:
+            if player.rect.x + 20 <= i.rect.x + 150:
+                if player.rect.y <= i.rect.y + 30:
+                    if player.rect.y + 115 >= i.rect.y:
+                        plata += 1
 
 def uphead():
     global god
@@ -336,8 +326,8 @@ bg = BackGround(x + 1240, y + 300)
 ground = Ground(x + 1240, y + 563)
 platform1 = Platform(x + 500, y + 370)
 platform2 = Platform(x + 800, y + 300)
-platform3 = Platform(x + 500, y + 370)
-platform4 = Platform(x + 500, y + 370)
+platform3 = Platform(x + 1000, y + 280)
+platform4 = Platform(x + 1200, y + 150)
 particle = Particle(x, y)
 menu = Menu(x + 500, y + 900)
 player = Player(pl_x, pl_y)
@@ -345,6 +335,8 @@ all_sprites.add(bg)
 all_sprites.add(ground)
 all_sprites.add(platform1)
 all_sprites.add(platform2)
+all_sprites.add(platform3)
+all_sprites.add(platform4)
 all_sprites.add(menu)
 all_sprites.add(particle)
 all_sprites.add(player)
@@ -352,6 +344,8 @@ all_sprites.add(player)
 platforms = []
 platforms.append(platform1)
 platforms.append(platform2)
+platforms.append(platform3)
+platforms.append(platform4)
 
 g = 1
 d = 20
@@ -376,7 +370,6 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
     screen.fill(BLUE)
     all_sprites.remove()
     all_sprites.update()
