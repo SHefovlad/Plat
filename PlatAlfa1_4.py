@@ -23,12 +23,19 @@ menu_img = pygame.image.load(os.path.join(img_folder, 'mn-1.png')).convert()
 bg_img = pygame.image.load(os.path.join(img_folder, 'bg-1.png')).convert()
 platform_img = pygame.image.load(os.path.join(img_folder, 'pp-1.png')).convert()
 particle_img = pygame.image.load(os.path.join(img_folder, 'pr-1.png')).convert()
+coin_img = pygame.image.load(os.path.join(img_folder, 'mc-1.png')).convert()
+image = pygame.image.load(os.path.join(img_folder, 'mc-1.png')).convert()
+image.set_colorkey(CK)
 ground_img = pygame.transform.scale(ground_img, (2500, 75))
 particles = ['pr-1.png', 'pr-2.png', 'pr-3.png']
 pl_x = 200
 pl_y = 422
 x = 0
 y = 0
+k = 0
+b = False
+cdone = False
+money = 0
 pr_x = 0
 pr_y = 0
 Flip = 0
@@ -79,17 +86,16 @@ class Player(pygame.sprite.Sprite):
         uphead()
         ddd()
         aaa()
-        if keys[pygame.K_r] and not show_menu:
-            ground.rect.x = -10
-            platform1.rect.x = 500
-            bg.rect.x = 0
-            self.rect.x = 200
-            self.rect.y = 322
-            if Flip == 1:
-                player_img = pygame.transform.flip(player_img, 1, 0)
-                Flip = 0
-            self.image = player_img
-            g = 1
+        #if keys[pygame.K_r] and not show_menu:
+        #    ground.rect.x = -10
+        #    bg.rect.x = 0
+        #    self.rect.x = 200
+        #    self.rect.y = 322
+        #    if Flip == 1:
+        #        player_img = pygame.transform.flip(player_img, 1, 0)
+        #        Flip = 0
+        #    self.image = player_img
+        #    g = 1
         if keys[pygame.K_d] and not show_menu:
             if Flip == 1:
                 player_img = pygame.transform.flip(player_img, 1, 0)
@@ -272,7 +278,46 @@ class Particle(pygame.sprite.Sprite):
             cod = 5
         else:
             cod = 10
+
+class Coin(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = coin_img
+        self.image.set_colorkey(CK)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+    def update(self):
+        global k, b, cdone, money
+        keys = pygame.key.get_pressed()
         
+        for i in coins:
+            if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 50 and player.rect.y <= i.rect.y and player.rect.y + 124 >= i.rect.y + 50:
+                cdone = True
+            if player.rect.x >= 800 and keys[pygame.K_d] and ground.rect.x > -1490 and not cdone:
+                if keys[pygame.K_LCTRL]:
+                    i.rect.x -= 9
+                else:
+                    i.rect.x -= 5
+            if player.rect.x <= 100 and keys[pygame.K_a] and ground.rect.x < -10 and not cdone:
+                if keys[pygame.K_LCTRL]:
+                    i.rect.x += 9
+                else:
+                    i.rect.x += 5
+            if not cdone:
+                if b or k <= -15:
+                    b = True
+                    i.rect.y += 1
+                    k += 1
+                if k >= 15 or not b:
+                    b = False
+                    i.rect.y -= 1
+                    k -= 1
+            else:
+                money += 1
+                all_sprites.remove(i)
+                coins.remove(i)
+                
 def ddd():
     global platd
     platd = 0
@@ -321,6 +366,11 @@ def fal():
         else:
             g = 1
 
+def print_text(message,x,y,font_color=(0,0,0),font_type='PixarOne.ttf',font_size=30):
+    font_type=pygame.font.Font(font_type,font_size)
+    text=font_type.render(message,True,font_color)
+    screen.blit(text,(x,y))
+
 all_sprites = pygame.sprite.Group()
 bg = BackGround(x + 1240, y + 300)
 ground = Ground(x + 1240, y + 563)
@@ -331,12 +381,14 @@ platform4 = Platform(x + 1200, y + 150)
 particle = Particle(x, y)
 menu = Menu(x + 500, y + 900)
 player = Player(pl_x, pl_y)
+coin1 = Coin(x + 500, y + 300)
 all_sprites.add(bg)
 all_sprites.add(ground)
 all_sprites.add(platform1)
 all_sprites.add(platform2)
 all_sprites.add(platform3)
 all_sprites.add(platform4)
+all_sprites.add(coin1)
 all_sprites.add(menu)
 all_sprites.add(particle)
 all_sprites.add(player)
@@ -346,6 +398,9 @@ platforms.append(platform1)
 platforms.append(platform2)
 platforms.append(platform3)
 platforms.append(platform4)
+
+coins = []
+coins.append(coin1)
 
 g = 1
 d = 20
@@ -364,9 +419,9 @@ pla_x = 240
 pla_y = 272
 f = 0
 f1 = 0
-
+imagerect = image.get_rect()
 while running:
-    clock.tick(FPS)
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -374,6 +429,8 @@ while running:
     all_sprites.remove()
     all_sprites.update()
     all_sprites.draw(screen)
+    screen.blit(image, (10, 10), imagerect)
+    print_text(str(money),70,17)
     if cur_pl == 1 and (f <= 10 and f1 >= 300):
         if Flip == 0:
             morg = pygame.draw.rect(screen, (0, 227, 84), (player.rect.x + 49, player.rect.y + 6, 18, 7))
