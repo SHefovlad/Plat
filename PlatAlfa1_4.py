@@ -35,6 +35,9 @@ y = 0
 k = 0
 b = False
 cdone = False
+up = False
+up_end = 0
+t = 0
 money = 0
 pr_x = 0
 pr_y = 0
@@ -61,14 +64,14 @@ class BackGround(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if player.rect.x >= 800 and keys[pygame.K_d] and self.rect.x > -1490:
             if keys[pygame.K_LCTRL]:
-                self.rect.x -= 9
+                self.rect.x -= 18
             else:
-                self.rect.x -= 5
+                self.rect.x -= 12
         if player.rect.x <= 100 and keys[pygame.K_a] and self.rect.x < -10:
             if keys[pygame.K_LCTRL]:
-                self.rect.x += 9
+                self.rect.x += 18
             else:
-                self.rect.x += 5
+                self.rect.x += 12
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pl_x, pl_y):
@@ -103,9 +106,9 @@ class Player(pygame.sprite.Sprite):
             player.image = player_img
             if player.rect.x <= 800:
                 if keys[pygame.K_d] and keys[pygame.K_LCTRL] and platd == 0:
-                    player.rect.x += 9
+                    player.rect.x += 18
                 elif keys[pygame.K_d] and platd == 0:
-                    player.rect.x += 5
+                    player.rect.x += 12
         if keys[pygame.K_a] and not show_menu:
             if Flip == 0:
                 player_img = pygame.transform.flip(player_img, 1, 0)
@@ -113,9 +116,9 @@ class Player(pygame.sprite.Sprite):
             self.image = player_img
             if self.rect.x >= 100:
                 if keys[pygame.K_LCTRL] and not show_menu and plata == 0:
-                    self.rect.x -= 9
+                    self.rect.x -= 18
                 elif keys[pygame.K_a] and platd == 0:
-                    self.rect.x -= 5
+                    self.rect.x -= 12
         if (keys[pygame.K_SPACE] or keys[pygame.K_w] or god) and not show_menu:
             if not god:
                 god = True
@@ -142,14 +145,14 @@ class Ground(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if player.rect.x >= 800 and keys[pygame.K_d] and self.rect.x > -1490:
             if keys[pygame.K_LCTRL]:
-                self.rect.x -= 9
+                self.rect.x -= 18
             else:
-                self.rect.x -= 5
+                self.rect.x -= 12
         if player.rect.x <= 100 and keys[pygame.K_a] and self.rect.x < -10:
             if keys[pygame.K_LCTRL]:
-                self.rect.x += 9
+                self.rect.x += 18
             else:
-                self.rect.x += 5
+                self.rect.x += 12
 
 class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -163,14 +166,14 @@ class Platform(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
         if player.rect.x >= 800 and keys[pygame.K_d] and ground.rect.x > -1490:
             if keys[pygame.K_LCTRL]:
-                self.rect.x -= 9
+                self.rect.x -= 18
             else:
-                self.rect.x -= 5
+                self.rect.x -= 12
         if player.rect.x <= 100 and keys[pygame.K_a] and ground.rect.x < -10:
             if keys[pygame.K_LCTRL]:
-                self.rect.x += 9
+                self.rect.x += 18
             else:
-                self.rect.x += 5
+                self.rect.x += 12
 
 class Menu(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -288,32 +291,33 @@ class Coin(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def update(self):
-        global k, b, cdone, money
+        global k, b, cdone, money, up, up_end, t
         keys = pygame.key.get_pressed()
-        
+        t = 0
         for i in coins:
+            cdone = False
             if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 50 and player.rect.y <= i.rect.y and player.rect.y + 124 >= i.rect.y + 50:
                 cdone = True
             if player.rect.x >= 800 and keys[pygame.K_d] and ground.rect.x > -1490 and not cdone:
                 if keys[pygame.K_LCTRL]:
-                    i.rect.x -= 9
+                    i.rect.x -= 18 / len(coins)
                 else:
-                    i.rect.x -= 5
+                    i.rect.x -= 12 / len(coins)
             if player.rect.x <= 100 and keys[pygame.K_a] and ground.rect.x < -10 and not cdone:
                 if keys[pygame.K_LCTRL]:
-                    i.rect.x += 9
+                    i.rect.x += 18 / len(coins)
                 else:
-                    i.rect.x += 5
-            if not cdone:
-                if b or k <= -15:
-                    b = True
-                    i.rect.y += 1
-                    k += 1
-                if k >= 15 or not b:
-                    b = False
-                    i.rect.y -= 1
-                    k -= 1
-            else:
+                    i.rect.x += 12 / len(coins)
+            #if not cdone:
+            #    if b or k <= -15:
+            #        b = True
+            #        i.rect.y += 1
+            #        k += 1
+            #    if k >= 15 or not b:
+            #        b = False
+            #        i.rect.y -= 1
+            #        k -= 1
+            if cdone:
                 money += 1
                 all_sprites.remove(i)
                 coins.remove(i)
@@ -382,6 +386,8 @@ particle = Particle(x, y)
 menu = Menu(x + 500, y + 900)
 player = Player(pl_x, pl_y)
 coin1 = Coin(x + 500, y + 300)
+coin2 = Coin(x + 800, y + 200)
+coin3 = Coin(x + 1200, y + 430)
 all_sprites.add(bg)
 all_sprites.add(ground)
 all_sprites.add(platform1)
@@ -389,6 +395,8 @@ all_sprites.add(platform2)
 all_sprites.add(platform3)
 all_sprites.add(platform4)
 all_sprites.add(coin1)
+all_sprites.add(coin2)
+all_sprites.add(coin3)
 all_sprites.add(menu)
 all_sprites.add(particle)
 all_sprites.add(player)
@@ -401,6 +409,8 @@ platforms.append(platform4)
 
 coins = []
 coins.append(coin1)
+coins.append(coin2)
+coins.append(coin3)
 
 g = 1
 d = 20
@@ -419,6 +429,7 @@ pla_x = 240
 pla_y = 272
 f = 0
 f1 = 0
+ln = len(coins)
 imagerect = image.get_rect()
 while running:
     clock.tick(30)
@@ -430,7 +441,7 @@ while running:
     all_sprites.update()
     all_sprites.draw(screen)
     screen.blit(image, (10, 10), imagerect)
-    print_text(str(money),70,17)
+    print_text(str(money) + "/" + str(ln), 70, 17)
     if cur_pl == 1 and (f <= 10 and f1 >= 300):
         if Flip == 0:
             morg = pygame.draw.rect(screen, (0, 227, 84), (player.rect.x + 49, player.rect.y + 6, 18, 7))
