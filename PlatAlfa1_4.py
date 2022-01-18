@@ -28,6 +28,7 @@ image = pygame.image.load(os.path.join(img_folder, 'mc-1.png')).convert()
 image.set_colorkey(CK)
 ground_img = pygame.transform.scale(ground_img, (2500, 75))
 particles = ['pr-1.png', 'pr-2.png', 'pr-3.png']
+moneys = ['mc-1.png', 'mc-2.png', 'mc-3.png', 'mc-4.png', 'mc-5.png']
 pl_x = 200
 pl_y = 422
 x = 0
@@ -35,7 +36,7 @@ y = 0
 k = 0
 b = False
 cdone = False
-up = False
+up = 0
 up_end = 0
 t = 0
 money = 0
@@ -291,11 +292,11 @@ class Coin(pygame.sprite.Sprite):
         self.rect.center = (x, y)
 
     def update(self):
-        global k, b, cdone, money, up, up_end, t
+        global k, b, cdone, money, up, up_end, t, coin_img
         keys = pygame.key.get_pressed()
-        t = 0
         for i in coins:
             cdone = False
+            t += 1
             if player.rect.x + 80 >= i.rect.x and player.rect.x + 20 <= i.rect.x + 50 and player.rect.y <= i.rect.y and player.rect.y + 124 >= i.rect.y + 50:
                 cdone = True
             if player.rect.x >= 800 and keys[pygame.K_d] and ground.rect.x > -1490 and not cdone:
@@ -308,15 +309,16 @@ class Coin(pygame.sprite.Sprite):
                     i.rect.x += 18 / len(coins)
                 else:
                     i.rect.x += 12 / len(coins)
-            #if not cdone:
-            #    if b or k <= -15:
-            #        b = True
-            #        i.rect.y += 1
-            #        k += 1
-            #    if k >= 15 or not b:
-            #        b = False
-            #        i.rect.y -= 1
-            #        k -= 1
+            if not cdone:
+                if t >= 10:
+                    i.image = pygame.image.load(os.path.join(img_folder, moneys[up])).convert()
+                    i.image.set_colorkey(CK)
+                if t >= 11:
+                    t = 0
+                if up == 4:
+                    up_end = -1
+                elif up == 0:
+                    up_end = 1
             if cdone:
                 money += 1
                 all_sprites.remove(i)
@@ -438,6 +440,8 @@ while running:
             running = False
     screen.fill(BLUE)
     all_sprites.remove()
+    if t >= 10:
+        up += up_end
     all_sprites.update()
     all_sprites.draw(screen)
     screen.blit(image, (10, 10), imagerect)
