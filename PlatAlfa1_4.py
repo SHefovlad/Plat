@@ -22,6 +22,7 @@ ground_img = pygame.image.load(os.path.join(img_folder, 'gr-1.png')).convert()
 menu_img = pygame.image.load(os.path.join(img_folder, 'mn-1.png')).convert()
 bg_img = pygame.image.load(os.path.join(img_folder, 'bg-1.png')).convert()
 platform_img = pygame.image.load(os.path.join(img_folder, 'pp-1.png')).convert()
+pipe_img = pygame.image.load(os.path.join(img_folder, 'tr-1.png')).convert()
 particle_img = pygame.image.load(os.path.join(img_folder, 'pr-1.png')).convert()
 coin_img = pygame.image.load(os.path.join(img_folder, 'mc-1.png')).convert()
 image = pygame.image.load(os.path.join(img_folder, 'mc-1.png')).convert()
@@ -159,6 +160,27 @@ class Platform(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.image = platform_img
+        self.image.set_colorkey(CK)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if player.rect.x >= 800 and keys[pygame.K_d] and ground.rect.x > -1490:
+            if keys[pygame.K_LCTRL]:
+                self.rect.x -= 18
+            else:
+                self.rect.x -= 12
+        if player.rect.x <= 100 and keys[pygame.K_a] and ground.rect.x < -10:
+            if keys[pygame.K_LCTRL]:
+                self.rect.x += 18
+            else:
+                self.rect.x += 12
+
+class Pipe(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pipe_img
         self.image.set_colorkey(CK)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -333,11 +355,23 @@ def ddd():
                 if player.rect.y <= i.rect.y + 30:
                     if player.rect.y + 115 >= i.rect.y:
                         platd += 1
+    for i in pipes:
+        if player.rect.x + 80 >= i.rect.x:
+            if player.rect.x + 20 <= i.rect.x + 150:
+                if player.rect.y <= i.rect.y + 30:
+                    if player.rect.y + 115 >= i.rect.y:
+                        platd += 1
 
 def aaa():
     global plata
     plata = 0
     for i in platforms:
+        if player.rect.x + 80 >= i.rect.x:
+            if player.rect.x + 20 <= i.rect.x + 150:
+                if player.rect.y <= i.rect.y + 30:
+                    if player.rect.y + 115 >= i.rect.y:
+                        plata += 1
+    for i in pipes:
         if player.rect.x + 80 >= i.rect.x:
             if player.rect.x + 20 <= i.rect.x + 150:
                 if player.rect.y <= i.rect.y + 30:
@@ -384,6 +418,7 @@ platform1 = Platform(x + 500, y + 370)
 platform2 = Platform(x + 800, y + 300)
 platform3 = Platform(x + 1000, y + 280)
 platform4 = Platform(x + 1200, y + 150)
+pipe1 = Pipe(x + 1000, y + 500)
 particle = Particle(x, y)
 menu = Menu(x + 500, y + 900)
 player = Player(pl_x, pl_y)
@@ -396,6 +431,7 @@ all_sprites.add(platform1)
 all_sprites.add(platform2)
 all_sprites.add(platform3)
 all_sprites.add(platform4)
+all_sprites.add(pipe1)
 all_sprites.add(coin1)
 all_sprites.add(coin2)
 all_sprites.add(coin3)
@@ -413,6 +449,9 @@ coins = []
 coins.append(coin1)
 coins.append(coin2)
 coins.append(coin3)
+
+pipes = []
+pipes.append(pipe1)
 
 g = 1
 d = 20
